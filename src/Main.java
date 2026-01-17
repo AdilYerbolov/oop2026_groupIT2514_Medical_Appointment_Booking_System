@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+//demo
 public class Main {
     public static void main(String[] args) {
         System.out.println("Connecting to Supabase...");
