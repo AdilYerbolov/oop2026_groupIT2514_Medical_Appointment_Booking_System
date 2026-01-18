@@ -24,7 +24,7 @@ public class appointmentDatabase {
  time_slot time not null,
  status varchar(100) not null
  )
- """;
+ """;//
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.execute();
             System.out.println("Table appointments is ready.");
