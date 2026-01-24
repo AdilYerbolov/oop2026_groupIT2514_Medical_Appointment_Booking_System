@@ -140,7 +140,7 @@ public class appointmentDatabase {
     }
     public static void viewUpcomingAppointmentsD(int doctorId, LocalDate today, LocalTime now){
         try (Connection connection = DatabaseConnection.getConnection()){
-            String sql = "select * from appointments where doctor_id = ? and appointment_date > ? and time_slot > ?";
+            String sql = "select * from appointments where doctor_id = ? and appointment_date > ?";
             ResultSet rs = null;
             try (PreparedStatement stmt = connection.prepareStatement(sql)){
                 stmt.setInt(1, doctorId);
