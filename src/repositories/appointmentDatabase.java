@@ -161,5 +161,5 @@ public class appointmentDatabase {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
+    }//
 }
