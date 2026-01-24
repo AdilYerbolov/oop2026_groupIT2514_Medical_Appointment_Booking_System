@@ -1,36 +1,34 @@
 package models;
 
-public class doctor {
-    private int id;
-    private String name;
+public class doctor extends user{
     private String specialization;
     private String avFrom;
     private String avTo;
 
-    doctor(String name, String specilizationation, String avFrom, String avTo){
-        setName(name);
+    doctor(String name, String email, String phone, String specilizationation, String avFrom, String avTo, String password){
+        super(name, email, phone, password);
         setSpecialization(specilizationation);
         setAvFrom(avFrom);
         setAvTo(avTo);
     }
 
-    public int getId(){
-        return id;
-    }
-    public String getName(){
-        return name;
-    }
     public String getSpecialization(){
         return specialization;
+    }
+    public String getEmail(){
+        return email;
+    }
+    public String getPhone() {
+        return phone;
+    }
+    public String getPassword() {
+        return password;
     }
     public String getAvFrom(){
         return avFrom;
     }
     public String getAvTo(){
         return avTo;
-    }
-    public void setId(int id){
-        this.id = id;
     }
     public void setName(String name){
         if (name != null){
@@ -43,6 +41,32 @@ public class doctor {
         }
         else{
             throw new IllegalArgumentException("name must not be empty!");
+        }
+    }
+    public void setEmail(String email) {
+        if (email != null) {
+            if (!email.isEmpty()) {
+                this.email = email;
+            }
+            else{
+                throw new IllegalArgumentException("email must not be empty!");
+            }
+        }
+        else{
+            throw new IllegalArgumentException("email must not be empty!");
+        }
+    }
+    public void setPhone(String phone){
+        if (phone != null) {
+            if (!phone.isEmpty()) {
+                this.phone= phone;
+            }
+            else{
+                throw new IllegalArgumentException("phone must not be empty!");
+            }
+        }
+        else{
+            throw new IllegalArgumentException("phone must not be empty!");
         }
     }
     public void setSpecialization(String specification){
@@ -64,6 +88,19 @@ public class doctor {
     }
     public void setAvTo(String avTo){
         this.avTo = avTo;
+    }
+    public void setPassword(String password){
+        if (password != null) {
+            if (!password.isEmpty()) {
+                this.password = email;
+            }
+            else{
+                throw new IllegalArgumentException("password must not be empty!");
+            }
+        }
+        else{
+            throw new IllegalArgumentException("password must not be empty!");
+        }
     }
 
     @Override
