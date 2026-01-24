@@ -116,12 +116,11 @@ public class appointmentDatabase {
     }
     public static void viewUpcomingAppointmentsP(int patientId, LocalDate today, LocalTime now) throws SQLException{
         try (Connection connection = DatabaseConnection.getConnection()){
-            String sql = "select * from appointments where patient_id = ? and appointment_date > ? and time_slot > ? and status = 'Booked'";
+            String sql = "select * from appointments where patient_id = ? and appointment_date > ? and status = 'Booked'";
             ResultSet rs = null;
             try (PreparedStatement stmt = connection.prepareStatement(sql)){
                 stmt.setInt(1, patientId);
                 stmt.setDate(2, Date.valueOf(today));
-                stmt.setTime(3, Time.valueOf(now));
                 rs = stmt.executeQuery();
                 if(rs.next()){
                     System.out.println("Upcoming appointments: \n");
@@ -140,12 +139,11 @@ public class appointmentDatabase {
     }
     public static void viewUpcomingAppointmentsD(int doctorId, LocalDate today, LocalTime now){
         try (Connection connection = DatabaseConnection.getConnection()){
-            String sql = "select * from appointments where doctor_id = ? and appointment_date > ?";
+            String sql = "select * from appointments where doctor_id = ? and appointment_date > ? and status = 'booked'";
             ResultSet rs = null;
             try (PreparedStatement stmt = connection.prepareStatement(sql)){
                 stmt.setInt(1, doctorId);
                 stmt.setDate(2, Date.valueOf(today));
-                stmt.setTime(3, Time.valueOf(now));
                 rs = stmt.executeQuery();
                 if(rs.next()){
                     System.out.println("Upcoming appointments: \n");
