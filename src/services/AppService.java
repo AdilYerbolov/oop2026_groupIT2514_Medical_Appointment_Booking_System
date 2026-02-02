@@ -2,6 +2,7 @@ package services;
 
 import exceptions.AppointmentNotFoundException;
 import exceptions.DoctorUnavailableException;
+import models.*;
 import repositories.doctorDatabase;
 import repositories.patientsDatabase;
 import repositories.appointmentDatabase;
@@ -9,9 +10,22 @@ import repositories.appointmentDatabase;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Scanner;
 
 public class AppService {
-    public static boolean isUserVerified(String email, String password, boolean isDoctor){
+    doctorDatabase doctorDatabase = new doctorDatabase();
+    patientsDatabase patientsDatabase = new patientsDatabase();
+    appointmentDatabase appointmentDatabase = new appointmentDatabase();
+
+    private static final AppService INSTANCE = new AppService();
+
+    private AppService(){}
+
+
+    public static AppService getInstance(){
+        return INSTANCE;
+    }
+    public boolean isUserVerified(String email, String password, boolean isDoctor){
         String dbPassword;
         if (!isDoctor) {
             try {
@@ -38,25 +52,25 @@ public class AppService {
             return false;
         }
     }
-    public static boolean isPatientCreated(String name, String email, String phone, String password){
+    public boolean isPatientCreated (Patient user){
         try {
-            patientsDatabase.insertUser(name, email, phone, password);
+            patientsDatabase.insertUser(user);
             return true;
         } catch (SQLException e){
             e.printStackTrace();
             return false;
         }
     }
-    public static boolean isDoctorCreated(String name, String specialization, String email, String phone, LocalTime avFrom, LocalTime avTo, String password){
+    public boolean isDoctorCreated(Doctor user){
         try {
-            doctorDatabase.insertUser(name, specialization, email, phone, avFrom, avTo, password);
+            doctorDatabase.insertUser(user);
             return true;
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
-    public static int getUserId(String email, boolean isDoctor){
+    public int getUserId(String email, boolean isDoctor){
         if (!isDoctor){
             try {
                 int id = patientsDatabase.getId(email);
@@ -74,11 +88,11 @@ public class AppService {
             }
         }
     }
-    public static boolean bookAppointment(int patientId, int doctorId, LocalDate appointmentDate, LocalTime timeSlot){
+    public boolean bookAppointment(Appointment app){
         try {
-            if (doctorDatabase.checkAvailability(doctorId, timeSlot)) {
-                if (appointmentDatabase.isTimeFree(doctorId, appointmentDate, timeSlot)) {
-                    appointmentDatabase.insertUser(patientId, doctorId, appointmentDate, timeSlot, "Booked");
+            if (doctorDatabase.checkAvailability(app.getDoctorId(), app.getTime())) {
+                if (appointmentDatabase.isTimeFree(app.getDoctorId(), app.getDate(), app.getTime())) {
+                    appointmentDatabase.insertUser(app);
                     return true;
                 }
                 else{
@@ -95,15 +109,15 @@ public class AppService {
             return false;
         }
     }
-    public static boolean isAppointmentCancelledSuccessfully(int patientId, int appointmentId){
+    public boolean isAppointmentCancelledSuccessfully(int patientId, int appointmentId){
         if(appointmentDatabase.isAppointmentCancelledSuccessfully(appointmentId, patientId)){
             return true;
         }
         else{
-            return false;
+            throw new AppointmentNotFoundException("Appointment not found!");
         }
     }
-    public static void viewDoctorsSchedule(int doctorId, LocalDate viewingDate){
+    public void viewDoctorsSchedule(int doctorId, LocalDate viewingDate){
         try {
             doctorDatabase.doctorWorkingHours(doctorId);
             appointmentDatabase.viewDoctorSchedule(doctorId, viewingDate);
@@ -111,7 +125,7 @@ public class AppService {
             throw new RuntimeException(e);
         }
     }
-    public static void viewUpcomingAppointments(int id, boolean isDoctor){
+    public void viewUpcomingAppointments(int id, boolean isDoctor){
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
         try {
@@ -125,16 +139,49 @@ public class AppService {
             throw new RuntimeException(e);
         }
     }
-    public static void viewDoctorsList(){
+    public void viewDoctorsList(){
         try {
             doctorDatabase.printAllDoctors();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public static void updateSchedule(int doctorId, LocalTime avFrom, LocalTime avTo){
+    public void updateSchedule(int doctorId, LocalTime avFrom, LocalTime avTo){
         try{
             doctorDatabase.changeSchedule(doctorId, avFrom, avTo);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void viewMedicalRecord(int id, boolean isDoctor){
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        try {
+            if (!isDoctor) {
+                appointmentDatabase.viewMedicalRecordP(id, today, now);
+            }
+            else{
+                appointmentDatabase.viewMedicalRecordD(id, today, now);
+            }
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+    public void addSummary(int appId, int doctorId, Scanner sc){
+        LocalDate today = LocalDate.now();
+        Appointment app;
+        try {
+            app = appointmentDatabase.getAppointment(appId, doctorId, today);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("Appointment found successfully!\nSummary: ");
+        String summary = sc.nextLine();
+        AppointmentSummary appSummary = AppointmentSummary.builder(appId, app.getPatientId(), doctorId)
+                .addSummary(summary)
+                .build();
+        try {
+            appointmentDatabase.addSummary(appSummary, appId);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -1,12 +1,18 @@
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Scanner;
+
+import models.Appointment;
+import models.AppointmentFactory;
+import models.Doctor;
 import services.AppService;
+import models.Patient;
 
 public class BookingApp {
     private static int userId;
     private static boolean running = true;
     private static Scanner sc = new Scanner(System.in);
+    private static AppService appService = AppService.getInstance();
     public static void start(){
         while(running) {
             System.out.println("Welcome to Booking app!\n" +
@@ -54,7 +60,8 @@ public class BookingApp {
                     "3. View doctors schedule\n" +
                     "4. View upcoming appointments\n" +
                     "5. View doctors list\n" +
-                    "6. quit");
+                    "6. View medical record\n" +
+                    "7. quit");
             while (!sc.hasNextInt()) {
                 System.out.println("Please enter a number");
                 sc.next();
@@ -72,12 +79,15 @@ public class BookingApp {
                     viewDoctorsSchedule();
                     break;
                 case 4:
-                    AppService.viewUpcomingAppointments(userId, false);
+                    appService.viewUpcomingAppointments(userId, false);
                     break;
                 case 5:
-                    AppService.viewDoctorsList();
+                    appService.viewDoctorsList();
                     break;
                 case 6:
+                    appService.viewMedicalRecord(userId, false);
+                    break;
+                case 7:
                     quit();
                     break;
                 default:
@@ -89,7 +99,9 @@ public class BookingApp {
         while (running) {
             System.out.println("1. View upcoming appointments\n" +
                     "2. Change schedule\n" +
-                    "3. quit");
+                    "3. Add summary to the appointment\n" +
+                    "4. View past appointments\n" +
+                    "5. quit");
             while (!sc.hasNextInt()) {
                 System.out.println("Please enter a number");
                 sc.next();
@@ -98,12 +110,18 @@ public class BookingApp {
             sc.nextLine();
             switch (ch) {
                 case 1:
-                    AppService.viewUpcomingAppointments(userId, true);
+                    appService.viewUpcomingAppointments(userId, true);
                     break;
                 case 2:
                     changeSchedule();
                     break;
                 case 3:
+                    addSummary();
+                    break;
+                case 4:
+                    appService.viewMedicalRecord(userId, true);
+                    break;
+                case 5:
                     quit();
                     break;
                 default:
@@ -147,9 +165,9 @@ public class BookingApp {
         String email = sc.nextLine();
         System.out.println("Password: ");
         String password = sc.nextLine();
-        if (AppService.isUserVerified(email, password, isDoctor)){
+        if (appService.isUserVerified(email, password, isDoctor)){
             System.out.println("Verified successfully!");
-            userId = AppService.getUserId(email, isDoctor);
+            userId = appService.getUserId(email, isDoctor);
             return true;
         }
         else{
@@ -168,18 +186,19 @@ public class BookingApp {
         int ch = sc.nextInt();
         sc.nextLine();
         if (ch == 1){
+            Patient user = new Patient("name", "email", "phone", "password");
             System.out.println("Email: ");
-            String email = sc.nextLine();
+            user.setEmail(sc.nextLine());
             System.out.println("Password: ");
-            String password = sc.nextLine();
+            user.setPassword(sc.nextLine());
             System.out.println("Your name: ");
-            String name = sc.nextLine();
+            user.setName(sc.nextLine());
             System.out.println("Phone number: ");
-            String phone = sc.nextLine();
+            user.setPhone(sc.nextLine());
             System.out.println("Trying to create account...");
-            if(AppService.isPatientCreated(name, email, phone, password)){
+            if(appService.isPatientCreated(user)){
                 System.out.println("Account created successfully!");
-                userId = AppService.getUserId(email, false);
+                userId = appService.getUserId(user.getEmail(), false);
                 return 1;
             }
             else{
@@ -188,24 +207,25 @@ public class BookingApp {
             }
         }
         else if (ch == 2){
+            Doctor user = new Doctor("name", "email", "phone", "spec", null, null, "password");
             System.out.println("Email: ");
-            String email = sc.nextLine();
+            user.setEmail(sc.nextLine());
             System.out.println("Password: ");
-            String password = sc.nextLine();
+            user.setPassword(sc.nextLine());
             System.out.println("Your name: ");
-            String name = sc.nextLine();
+            user.setName(sc.nextLine());
             System.out.println("Your specialization: ");
-            String specialization = sc.nextLine();
+            user.setSpecialization(sc.nextLine());
             System.out.println("Phone number: ");
-            String phone = sc.nextLine();
+            user.setPhone(sc.nextLine());
             System.out.println("From what time you are available (in HH:MM format): ");
-            LocalTime avFrom = LocalTime.parse(sc.nextLine());
+            user.setAvFrom(LocalTime.parse(sc.nextLine()));
             System.out.println("Until what time you are available (in HH:MM format): ");
-            LocalTime avTo = LocalTime.parse(sc.nextLine());
+            user.setAvTo(LocalTime.parse(sc.nextLine()));
             System.out.println("Trying to crate an account");
-            if (AppService.isDoctorCreated(name, specialization, email, phone, avFrom, avTo, password)){
+            if (appService.isDoctorCreated(user)){
                 System.out.println("Account created successfully!");
-                userId = AppService.getUserId(email, true);
+                userId = appService.getUserId(user.getEmail(), true);
                 return 2;
             }
             else{
@@ -227,7 +247,7 @@ public class BookingApp {
         int doctorId = sc.nextInt();
         sc.nextLine();
         System.out.println("Date of an appointment in yyyy-MM-dd format: ");
-        LocalDate appointmentDate = LocalDate.parse(sc.nextLine());
+        LocalDate date = LocalDate.parse(sc.nextLine());
         System.out.println("Please choose the time slot:" +
                 "1. 09:00 - 09:30\n" +
                 "2. 09:30 - 10:00\n" +
@@ -286,8 +306,19 @@ public class BookingApp {
             case 24: time = "20:30"; break;
         }
         LocalTime timeSlot = LocalTime.parse(time);
+        System.out.println("Type of the appointment:\n" +
+                "1. In person\n" +
+                "2. online\n" +
+                "3. follow up");
+        while (!sc.hasNextInt()) {
+            System.out.println("Please enter a number");
+            sc.next();
+        }
+        ch = sc.nextInt();
+        sc.nextLine();
+        Appointment app = AppointmentFactory.getAppointment(ch, userId, doctorId, date, timeSlot);
         System.out.println("Booking the appointment...");
-        if(AppService.bookAppointment(userId, doctorId, appointmentDate, timeSlot)) {
+        if(appService.bookAppointment(app)) {
             System.out.println("Appointment booked successfully!");
         } else{
             System.out.println("Failed to book an appointment.");
@@ -300,7 +331,7 @@ public class BookingApp {
             sc.next();
         }
         int appointmentId = sc.nextInt();
-        if (AppService.isAppointmentCancelledSuccessfully(userId, appointmentId)) {
+        if (appService.isAppointmentCancelledSuccessfully(userId, appointmentId)) {
             System.out.println("Appointment canceled successfully!");
         }
         else{
@@ -317,7 +348,7 @@ public class BookingApp {
         sc.nextLine();
         System.out.println("Date in yyyy-MM-dd format: ");
         LocalDate viewingDate = LocalDate.parse(sc.nextLine());
-        AppService.viewDoctorsSchedule(doctorId, viewingDate);
+        appService.viewDoctorsSchedule(doctorId, viewingDate);
     }
     private static void quit(){
         running = false;
@@ -327,6 +358,16 @@ public class BookingApp {
         LocalTime avFrom = LocalTime.parse(sc.nextLine());
         System.out.println("Available until in HH:MM format: ");
         LocalTime avTo = LocalTime.parse(sc.nextLine());
-        AppService.updateSchedule(userId, avFrom, avTo);
+        appService.updateSchedule(userId, avFrom, avTo);
+    }
+    private static void addSummary(){
+        System.out.println("Appointment id: ");
+        while (!sc.hasNextInt()) {
+            System.out.println("Please enter a number");
+            sc.next();
+        }
+        int appId = sc.nextInt();
+        sc.nextLine();
+        appService.addSummary(appId, userId, sc);
     }
 }

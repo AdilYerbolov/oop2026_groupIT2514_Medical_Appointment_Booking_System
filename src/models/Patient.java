@@ -1,16 +1,13 @@
 package models;
 
-public class Patient {
-    private int id;
-    private String name;
-    private String email;
+public class Patient extends User {
 
-    public Patient(int id, String name, String email) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
+    public Patient(String name, String email, String phone, String password){
+        super(name, email, phone, password);
     }
 
-    public int getId() { return id;}
-    public String getName() { return name;}
+    @Override
+    public String toString(){
+        return "patient name: " + name + ", email: " + email + ", phone: " + phone + "\n";
+    }
 }

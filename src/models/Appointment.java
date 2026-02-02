@@ -2,28 +2,57 @@ package models;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Date;
 
-public abstract class Appointment {
-    protected int id;
-    protected int patientId;
-    protected int doctorId;
-    protected LocalDate date;
-    protected LocalTime time;
-    protected AppointmentStatus status;
+public class Appointment {
+    private int id;
+    private int patientId;
+    private int doctorId;
+    private LocalDate date;
+    private LocalTime time;
+    private String type;
 
-    protected Appointment(int patientId, int doctorId, LocalDate date, LocalTime time) {
-        this.patientId = patientId;
-        this.doctorId = doctorId;
-        this.date = date;
-        this.time = time;
-        this.status = AppointmentStatus.BOOKED;
+    public Appointment(int patientId, int doctorId, LocalDate date, LocalTime time){
+        setPatientId(patientId);
+        setDoctorId(doctorId);
+        setDate(date);
+        setTime(time);
     }
 
-    public abstract String getType();
-
-    public int getPatientId() { return patientId; }
-    public int getDoctorId() { return doctorId; }
-    public LocalDate getDate() { return date; }
-    public LocalTime getTime() { return time; }
-    public AppointmentStatus getStatus() { return status; }
+    public int getId(){
+        return id;
+    }
+    public int getPatientId(){
+        return patientId;
+    }
+    public int getDoctorId() {
+        return doctorId;
+    }
+    public LocalDate getDate(){
+        return date;
+    }
+    public LocalTime getTime() {
+        return time;
+    }
+    public String getType(){
+        return type;
+    }
+    public void setId(int id){
+        this.id = id;
+    }
+    public void setPatientId(int patientId){
+        this.patientId = patientId;
+    }
+    public void setDoctorId(int doctorId){
+        this.doctorId = doctorId;
+    }
+    public void setDate(LocalDate date){
+        this.date = date;
+    }
+    public void setTime(LocalTime time){
+        this.time = time;
+    }
+    public void setType(String type){
+        this.type = type;
+    }
 }
