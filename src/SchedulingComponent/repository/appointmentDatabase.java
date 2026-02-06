@@ -1,12 +1,11 @@
-package repositories;
+package SchedulingComponent.repository;
 import Interfaces.Repository;
 import edu.aitu.oop3.db.DatabaseConnection;
-import exceptions.AppointmentNotFoundException;
-import exceptions.DoctorUnavailableException;
-import models.Appointment;
-import models.AppointmentSummary;
+import SchedulingComponent.exception.AppointmentNotFoundException;
+import PatientRecordsComponent.exception.DoctorUnavailableException;
+import SchedulingComponent.model.Appointment;
+import SchedulingComponent.model.AppointmentSummary;
 
-import javax.xml.crypto.Data;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;

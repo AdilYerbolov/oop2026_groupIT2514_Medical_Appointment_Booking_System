@@ -1,7 +1,7 @@
-package repositories;
+package PatientRecordsComponent.repository;
 import Interfaces.Repository;
 import edu.aitu.oop3.db.DatabaseConnection;
-import models.Patient;
+import PatientRecordsComponent.model.Patient;
 
 import java.sql.*;
 

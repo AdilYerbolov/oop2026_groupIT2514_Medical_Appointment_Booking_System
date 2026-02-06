@@ -1,4 +1,9 @@
-package models;
+package SchedulingComponent.factory;
+
+import SchedulingComponent.model.Appointment;
+import SchedulingComponent.model.FollowUpAppointment;
+import SchedulingComponent.model.InPersonAppointment;
+import SchedulingComponent.model.OnlineAppointment;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

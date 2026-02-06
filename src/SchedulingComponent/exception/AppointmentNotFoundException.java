@@ -1,4 +1,4 @@
-package exceptions;
+package SchedulingComponent.exception;
 
 public class AppointmentNotFoundException extends RuntimeException {
     public AppointmentNotFoundException(String message) {

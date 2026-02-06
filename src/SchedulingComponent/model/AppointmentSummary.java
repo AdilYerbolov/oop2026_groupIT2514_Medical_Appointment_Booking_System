@@ -1,4 +1,4 @@
-package models;
+package SchedulingComponent.model;
 
 public class AppointmentSummary {
     private int appointmentId;
@@ -64,6 +64,7 @@ public class AppointmentSummary {
             return this;
         }
         public AppointmentSummary build(){
+
             return new AppointmentSummary(this);
         }
     }

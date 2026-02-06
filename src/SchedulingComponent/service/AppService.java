@@ -1,11 +1,13 @@
-package services;
+package SchedulingComponent.service;
 
-import exceptions.AppointmentNotFoundException;
-import exceptions.DoctorUnavailableException;
-import models.*;
-import repositories.doctorDatabase;
-import repositories.patientsDatabase;
-import repositories.appointmentDatabase;
+import NotificationComponent.service.NotificationService;
+import SchedulingComponent.model.Appointment;
+import SchedulingComponent.model.AppointmentSummary;
+import SchedulingComponent.exception.AppointmentNotFoundException;
+import PatientRecordsComponent.exception.DoctorUnavailableException;
+import PatientRecordsComponent.repository.doctorDatabase;
+import PatientRecordsComponent.repository.patientsDatabase;
+import SchedulingComponent.repository.appointmentDatabase;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -24,69 +26,6 @@ public class AppService {
 
     public static AppService getInstance(){
         return INSTANCE;
-    }
-    public boolean isUserVerified(String email, String password, boolean isDoctor){
-        String dbPassword;
-        if (!isDoctor) {
-            try {
-                dbPassword = patientsDatabase.getUserPasswordByEmail(email);
-            } catch (SQLException e){
-                System.out.println("Database error: ");
-                e.printStackTrace();
-                return false;
-            }
-        }
-        else{
-            try {
-                dbPassword = doctorDatabase.getUserPasswordByEmail(email);
-            } catch (SQLException e){
-                System.out.println("Database error: ");
-                e.printStackTrace();
-                return false;
-            }
-        }
-        if (dbPassword.equals(password)){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-    public boolean isPatientCreated (Patient user){
-        try {
-            patientsDatabase.insertUser(user);
-            return true;
-        } catch (SQLException e){
-            e.printStackTrace();
-            return false;
-        }
-    }
-    public boolean isDoctorCreated(Doctor user){
-        try {
-            doctorDatabase.insertUser(user);
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    public int getUserId(String email, boolean isDoctor){
-        if (!isDoctor){
-            try {
-                int id = patientsDatabase.getId(email);
-                return id;
-            } catch (SQLException e){
-                throw new RuntimeException(e);
-            }
-        }
-        else {
-            try {
-                int id = doctorDatabase.getId(email);
-                return id;
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
     public boolean bookAppointment(Appointment app){
         try {
@@ -175,7 +114,8 @@ public class AppService {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Appointment found successfully!\nSummary: ");
+        NotificationService.send("Appointment found successfully!");
+        System.out.println("Summary: ");
         String summary = sc.nextLine();
         AppointmentSummary appSummary = AppointmentSummary.builder(appId, app.getPatientId(), doctorId)
                 .addSummary(summary)

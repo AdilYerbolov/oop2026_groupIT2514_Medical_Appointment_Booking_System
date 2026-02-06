@@ -1,8 +1,7 @@
-package models;
+package SchedulingComponent.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
 public class Appointment {
     private int id;

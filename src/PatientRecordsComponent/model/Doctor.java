@@ -1,4 +1,4 @@
-package models;
+package PatientRecordsComponent.model;
 
 import java.time.LocalTime;
 

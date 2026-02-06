@@ -1,8 +1,5 @@
-import edu.aitu.oop3.db.DatabaseConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import UI.BookingApp;
+
 public class Main {
     public static void main(String[] args) {
         BookingApp.start();

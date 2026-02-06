@@ -1,4 +1,4 @@
-package models;
+package PatientRecordsComponent.model;
 
 public abstract class User {
     protected int id;

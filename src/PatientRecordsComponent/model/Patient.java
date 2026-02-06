@@ -1,4 +1,4 @@
-package models;
+package PatientRecordsComponent.model;
 
 public class Patient extends User {
 
